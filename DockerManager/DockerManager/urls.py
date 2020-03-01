@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from django.conf.urls import url
+from dockermanage.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
+    url(r'^api/image$',ImageView.as_view(),name='image'),
+    url(r'^api/container$',ContainerView.as_view(),name='container'),
 ]
