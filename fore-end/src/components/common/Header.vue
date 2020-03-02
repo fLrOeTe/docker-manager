@@ -4,7 +4,7 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo">Bing敏感信息检索系统</div>
+        <div class="logo">Docker 调度</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
