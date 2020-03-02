@@ -102,7 +102,7 @@ class DockerView():
                 "msg":e
             }
 
-    def importImage(self,filename,repository=None,tag=None,changes=None):
+    def importImageByfile(self,filename,repository=None,tag=None,changes=None):
         try:
             self.dockerm.import_image_from_file(filename=filename,repository=repository,tag=tag,changes=changes)
             return {

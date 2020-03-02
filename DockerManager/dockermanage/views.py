@@ -13,6 +13,10 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from rest_framework import generics
+from .models import *
+from rest_framework import mixins
+from rest_framework.viewsets import GenericViewSet,ViewSet
+from rest_framework.decorators import action
 # Create your views here.
 
 class ImageView(APIView):
@@ -51,4 +55,69 @@ class ContainerView(APIView):
         conSet=self.dclass.getAllContainers()
         return Response(conSet)
 
+class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,GenericViewSet):
+    queryset = ImageModel.objects.all()
+    serializer_class = ImageSerializer
+    dk=DockerView()
+    @action(methods=['get'],detail=False)
+    def all(self,request):
+        image=self.dk.getAllImage()
+        return  Response(image)
 
+    @action(methods=['post'],detail=False)
+    def search(self,request):
+        image=self.dk.inspectImage(request.data["name"])
+        return Response(image)
+
+class ImagedownloadView(APIView):
+    def __init__(self):
+        self.dclass=DockerView()
+    def get(self,request):
+        imageSet=self.dclass.getAllImage()
+        return Response(imageSet)
+    def post(self,request):
+        iamge=request.data["image"]
+        path=request.data["path"]
+        name=request.data["name"]
+        ret=self.dclass.downloadImage(image=iamge,path=path,name=name)
+        return Response(ret)
+
+class ImageImportView(APIView):
+    def __init__(self):
+        self.dclass=DockerView()
+    def get(self,request):
+        imageSet=self.dclass.getAllImage()
+        return Response(imageSet)
+    def post(self,request):
+        filename=request.data["filename"]
+        repository=request.data["rep"]
+        tag=request.data["tag"]
+        changes=request.data["changes"]
+        ret=self.dclass.importImageByfile(filename=filename,repository=repository,tag=tag,changes=changes)
+        return Response(ret)
+
+class ImageDetailView(APIView):
+    def __init__(self):
+        self.dclass=DockerView()
+    def get(self,request):
+        imageSet=self.dclass.getAllImage()
+        return Response(imageSet)
+    def post(self,request):
+        image=request.data["image"]
+        ret=self.dclass.inspectImage(image=image)
+        return Response(ret)
+class ImageRemoveView(APIView):
+    def __init__(self):
+        self.dclass=DockerView()
+    def get(self,request):
+        imageSet=self.dclass.getAllImage()
+        return Response(imageSet)
+    def post(self,request):
+        image=request.data["image"]
+        force=request.data["force"]
+        noprune=request.data["noprune"]
+        forces=False
+        if force=="True":
+            forces=True
+        ret=self.dclass.removeImage(image=image,force=forces)
+        return Response(ret)

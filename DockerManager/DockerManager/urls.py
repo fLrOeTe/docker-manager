@@ -14,11 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include,path
 from django.conf.urls import url
 from dockermanage.views import *
+from rest_framework import routers
+router=routers.SimpleRouter()
+router.register(r'images',ImageConfigViewSet,base_name="image-detail")
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^api/image$',ImageView.as_view(),name='image'),
+    url(r'^api/image$',ImageRemoveView.as_view(),name='image'),
     url(r'^api/container$',ContainerView.as_view(),name='container'),
+    url(r'^', include(router.urls))
 ]
