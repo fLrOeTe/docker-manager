@@ -17,6 +17,10 @@ from .models import *
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet,ViewSet
 from rest_framework.decorators import action
+
+from django.shortcuts import HttpResponse
+from rest_framework import permissions
+from rest_framework import generics
 # Create your views here.
 
 class ImageView(APIView):
@@ -45,11 +49,6 @@ class ContainerView(APIView):
     def __init__(self):
         self.dclass=DockerView()
         self.imageSet=self.dclass.getAllImage()
-        for i in self.imageSet:
-            if ImageModel.objects.filter(id=self.imageSet[i]["id"]).count()==0:
-                serializer=ImageSerializer(data=self.imageSet[i])
-                if serializer.is_valid():
-                    serializer.save()
 
     def get(self,request):
         conSet=self.dclass.getAllContainers()
@@ -121,3 +120,11 @@ class ImageRemoveView(APIView):
             forces=True
         ret=self.dclass.removeImage(image=image,force=forces)
         return Response(ret)
+
+class AssetInfo(generics.ListCreateAPIView):
+    """
+    资产
+    """
+    queryset = Asset.objects.get_queryset().order_by('id')
+    serializer_class = AssetSerializer
+    permission_classes = (permissions.IsAdminUser,)

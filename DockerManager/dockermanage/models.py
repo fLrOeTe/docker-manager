@@ -9,3 +9,14 @@ class ImageModel(models.Model):
     class Meta:
         verbose_name='Image'
         verbose_name_plural=verbose_name
+
+class Asset(models.Model):
+    hostname = models.CharField(max_length=64, verbose_name='主机名', unique=True)
+    ip = models.CharField(max_length=30, verbose_name='ip', blank=True, null=True, )
+    class Meta:
+        db_table = "asset"
+        verbose_name = "asset"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.hostname

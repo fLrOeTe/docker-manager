@@ -56,7 +56,7 @@ class DockerView():
             imageDict=self.dockerm.images()
         except Exception as e:
             return {}
-        dict={}
+        dict=[]
         if imageDict == {}:
             return {}
         for i in imageDict:
@@ -64,13 +64,11 @@ class DockerView():
             name=i["RepoTags"][0]
             size=i["Size"]
             time=i["Created"]
-            dict.update({
-                name:{
+            dict.append({
                     "name":name,
                     "id":id,
                     "size":size,
                     "time":time
-                }
             })
         return dict
     def downloadImage(self,image,path,name):
