@@ -307,6 +307,54 @@ class DockerView():
                 "success":False,
                 "msg":e
             }
+    def createVolumes(self,name=None,driver=None,driver_opts=None,labels=None):
+        try:
+            dic=self.dockerm.create_volume(name=name,driver=driver,driver_opts=driver_opts,labels=labels)
+            return {
+                "success":True,
+                "msg":dic
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
+    def detailVolumes(self,name):
+        try:
+            dic=self.dockerm.inspect_volume(name=name)
+            return {
+                "success":True,
+                "msg":dic
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
+    def removeVolumes(self,name,force=False):
+        try:
+            self.dockerm.remove_volume(name=name,force=force)
+            return {
+                "success":True,
+                "msg":"delete this volume successsfully"
+            }
+        except Exception as e:
+            return {
+                "success":True,
+                "msg":"failed to remove this volume"
+            }
+    def listVolumes(self,filters=None):
+        try:
+            dic=self.dockerm.volumes(filters=filters)
+            return {
+                "success":True,
+                "msg":dic
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
     
 
 
