@@ -19,10 +19,13 @@ from django.urls import include,path
 from django.conf.urls import url
 from dockermanage.views import *
 from rest_framework import routers
+from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.views import get_swagger_view
+from rest_framework_swagger.renderers import SwaggerUIRenderer,OpenAPIRenderer
 router=routers.SimpleRouter()
 router.register(r'images',ImageConfigViewSet,base_name="image-detail")
-schema_view=get_swagger_view(title='api doc')
+#schema_view=get_swagger_view(title='api doc')
+schema_view = get_schema_view(title='API',renderer_classes=[SwaggerUIRenderer,OpenAPIRenderer])
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api/image$',ImageView.as_view(),name='image'),

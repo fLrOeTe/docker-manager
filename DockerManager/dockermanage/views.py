@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from django.forms.models import model_to_dict
 from rest_framework.reverse import reverse
 from .models import *
 from .serializer import *
@@ -55,18 +56,97 @@ class ContainerView(APIView):
         return Response(conSet)
 
 class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,GenericViewSet):
-    queryset = ImageModel.objects.all()
-    serializer_class = ImageSerializer
+    queryset = ImageTModel.objects.all()
+    serializer_class = ImageTSerializer
     dk=DockerView()
+    def refrush(self):
+        image = self.dk.getAllImage()
+        for i in image:
+            if self.get_queryset().filter(name=i["name"]).count() == 0:
+                ser = self.get_serializer(data=i)
+                if ser.is_valid():
+                    ser.save()
+            elif self.get_queryset().filter(tag=i["tag"]).count() == 0:
+                ser = self.get_serializer(data=i)
+                if ser.is_valid():
+                    ser.save()
+            else:
+                pass
     @action(methods=['get'],detail=False)
     def all(self,request):
-        image=self.dk.getAllImage()
-        return  Response(image)
+        self.refrush()
+        return  Response(self.get_queryset().all().values())
 
     @action(methods=['post'],detail=False)
     def search(self,request):
+        self.refrush()
+        name=request.data["name"]
+        ret=self.get_queryset().filter(name=name)
         image=self.dk.inspectImage(request.data["name"])
-        return Response(image)
+        return Response(ret.values())
+    @action(methods=['post'],detail=False)
+    def delete(self,request):
+        self.refrush()
+        name=request.data["name"]
+        tag=request.data["tag"]
+        id=request.data["id"]
+        print(str(id))
+        image=""
+        if id!="":
+            ret=model_to_dict(self.get_queryset().filter(id=id).first())
+            if ret!={}:
+                img=ret["name"]+":"+ret["tag"]
+                dic=self.dk.removeImage(image=img,force=True)
+                if dic["success"]==True:
+                    self.get_queryset().filter(id=id).delete()
+                    return  Response(dic)
+                else:
+                    return Response(dic)
+            else:
+                return Response({
+                    "msg":"no mach"
+                })
+        elif name!="":
+            if tag!="":
+                img=name+":"+tag
+                dic=self.dk.removeImage(image=img,force=True)
+                self.get_queryset().filter(name=name,tag=tag).delete()
+                return Response(dic)
+            else:
+                img=name
+                dic=self.dk.removeImage(image=img,force=True)
+                if dic["success"]==True:
+                    self.get_queryset().filter(name=name).delete()
+                    return Response(dic)
+                else:
+                    return Response(dic)
+    @action(methods=['post'],detail=False)
+    def detail(self,request):
+        name=request.data["name"]
+        id=request.data["id"]
+        tag=request.data["tag"]
+        if id!="":
+            ret=model_to_dict(self.get_queryset().filter(id=id).first())
+            if ret!={}:
+                name=ret["name"]+":"+ret["tag"]
+                dic=self.dk.inspectImage(image=name)
+                return Response(dic)
+            else:
+                return Response({
+                    "success":False
+                })
+        elif name!="":
+            dic={}
+            if tag!="":
+                name=name+":"+tag
+                dic=self.dk.inspectImage(image=name)
+            else:
+                dic=self.dk.inspectImage(image=name)
+            return Response(dic)
+        else:
+            return Response({
+                "success":False
+            })
 
 class ImagedownloadView(APIView):
     def __init__(self):

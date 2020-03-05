@@ -62,10 +62,13 @@ class DockerView():
         for i in imageDict:
             id=i["Id"][7:]
             name=i["RepoTags"][0]
+            name1=name[0:name.rfind(':',1)]
+            tag=name[name.rfind(':',1)+1:]
             size=i["Size"]
             time=i["Created"]
             dict.append({
-                    "name":name,
+                    "name":name1,
+                    "tag":tag,
                     "id":id,
                     "size":size,
                     "time":time
@@ -85,7 +88,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
     def importImage(self,src=None, repository=None, tag=None, image=None, changes=None, stream_src=False):
         try:
@@ -97,7 +100,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
 
     def importImageByfile(self,filename,repository=None,tag=None,changes=None):
@@ -110,7 +113,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
 
     def inspectImage(self,image):
@@ -119,7 +122,7 @@ class DockerView():
             return dist
         except Exception as e:
             return {
-                "fail":e
+                "fail":str(e)
             }
     def pushImage(self,repository, tag=None, stream=False, auth_config=None, decode=False):
         try:
@@ -134,12 +137,12 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
 
     def removeImage(self,image,force=False,noprune=False):
         try:
-            self.dockerm.remove_image(image=image,force=force,noprune=noprune)
+            self.dockerm.remove_image(image,force=force,noprune=noprune)
             return {
                 "success":True,
                 "msg":"remove Image successfully"
@@ -147,7 +150,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
 
     def searchImage(self,tern):
@@ -156,7 +159,7 @@ class DockerView():
             return ret
         except Exception as e:
             return {
-                "fail":e
+                "fail":str(e)
             }
 
     def getAllContainers(self):
@@ -197,7 +200,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
 
 
@@ -263,7 +266,7 @@ class DockerView():
         except Exception as e:
             msg={
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
             return msg
 
@@ -277,7 +280,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
     def showNetwork(self,name=None,ids=None):
         try:
@@ -285,7 +288,7 @@ class DockerView():
             return net
         except Exception as e:
             return {
-                "failed":e
+                "failed":str(e)
             }
 
     def showNetworkDetail(self,net_id,verbose=None,scope=None):
@@ -305,7 +308,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
     def createVolumes(self,name=None,driver=None,driver_opts=None,labels=None):
         try:
@@ -317,7 +320,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
     def detailVolumes(self,name):
         try:
@@ -329,7 +332,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
     def removeVolumes(self,name,force=False):
         try:
@@ -353,7 +356,7 @@ class DockerView():
         except Exception as e:
             return {
                 "success":False,
-                "msg":e
+                "msg":str(e)
             }
     
 
@@ -362,4 +365,4 @@ a=DockerView()
 #a.pullImages(name="centos",tag="latest")
 #print(json.dumps(a.showNetwork(),indent=3))
 #a.showNetworkDetail(net_id="b0514c47f75cf59c9826b4adfc5d90240d185e03d989e557aa67cb9884e172ba")
-print(a.searchImage(tern="ctfd"))
+#print(a.removeImage("ubuntu"))

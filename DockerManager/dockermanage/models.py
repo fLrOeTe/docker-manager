@@ -10,6 +10,16 @@ class ImageModel(models.Model):
         verbose_name='Image'
         verbose_name_plural=verbose_name
 
+class ImageTModel(models.Model):
+    name = models.CharField(max_length=100)
+    tag=models.CharField(max_length=50)
+    id = models.CharField(max_length=200, primary_key=True)
+    time = models.CharField(max_length=100)
+    size = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = 'ImageT'
+        verbose_name_plural = verbose_name
 class Asset(models.Model):
     hostname = models.CharField(max_length=64, verbose_name='主机名', unique=True)
     ip = models.CharField(max_length=30, verbose_name='ip', blank=True, null=True, )
