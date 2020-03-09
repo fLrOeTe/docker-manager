@@ -147,7 +147,12 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
             return Response({
                 "success":False
             })
-
+    @action(methods=['post'],detail=False)
+    def find(self,request):
+        name=request.data['name']
+        dic=self.dk.searchImage(tern=name)
+        return Response(dic)
+    
 class ImagedownloadView(APIView):
     def __init__(self):
         self.dclass=DockerView()
