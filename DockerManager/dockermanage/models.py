@@ -11,10 +11,10 @@ class ImageModel(models.Model):
         verbose_name_plural=verbose_name
 
 class ImageTModel(models.Model):
-    name = models.CharField(max_length=100)
-    tag=models.CharField(max_length=50)
-    id = models.CharField(max_length=200, primary_key=True)
-    time = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,help_text="the images name,is required")
+    tag=models.CharField(max_length=50,help_text="the tag of images")
+    id = models.CharField(max_length=200, primary_key=True,help_text="the id of the images")
+    time = models.CharField(max_length=100,help_text="create time")
     size = models.CharField(max_length=100)
 
     class Meta:

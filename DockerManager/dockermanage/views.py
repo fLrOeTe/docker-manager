@@ -18,7 +18,7 @@ from .models import *
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet,ViewSet
 from rest_framework.decorators import action
-
+from .schema_view import DocParam
 from django.shortcuts import HttpResponse
 from rest_framework import permissions
 from rest_framework import generics
@@ -59,6 +59,20 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
     queryset = ImageTModel.objects.all()
     serializer_class = ImageTSerializer
     dk=DockerView()
+    """
+    all:
+        return all images
+    search:
+        search images local
+    delete:
+        delete images local
+    detail:
+        retuen the image's detail
+    find:
+        search images in network
+    pull:
+        download image from network
+    """
     def refrush(self):
         image = self.dk.getAllImage()
         for i in image:
@@ -80,6 +94,9 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
     @action(methods=['post'],detail=False)
     def search(self,request):
         self.refrush()
+        coreapi_fields=(
+            DocParam(name='name',location='query',description='image name')
+        )
         name=request.data["name"]
         ret=self.get_queryset().filter(name=name)
         image=self.dk.inspectImage(request.data["name"])
