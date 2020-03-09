@@ -16,3 +16,10 @@ class AssetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asset
         fields = '__all__'
+
+class IpamPoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IpamPoolModel
+        fields=('subnet','iprange','gateway','aux_addresses')
+
+

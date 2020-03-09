@@ -30,3 +30,13 @@ class Asset(models.Model):
 
     def __str__(self):
         return self.hostname
+
+class IpamPoolModel(models.Model):
+    subnet=models.CharField(max_length=64,primary_key=True)
+    iprange=models.CharField(max_length=72)
+    gateway=models.CharField(max_length=100)
+    aux_addresses=models.CharField(max_length=150)
+
+    class Meta:
+        verbose_name='IpamPool'
+        verbose_name_plural=verbose_name

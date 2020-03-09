@@ -152,7 +152,57 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
         name=request.data['name']
         dic=self.dk.searchImage(tern=name)
         return Response(dic)
-    
+    @action(methods=['post'],detail=False)
+    def pull(self,request):
+        name=request.data['name']
+        tag=request.data['tag']
+        try:
+            self.dk.pullImages(name=name,tag=tag)
+            ret={
+                "success":True,
+                "msg":"pull image success!"
+            }
+            self.refrush()
+            return Response(ret)
+        except Exception as e:
+            ret={
+                "success":False,
+                "msg":e
+            }
+class NetworkViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,GenericViewSet):
+    queryset = IpamPoolModel.objects.all()
+    serializer_class = IpamPoolSerializer
+    dk=DockerView()
+
+    @action(methods=['post'],detail=False)
+    def create_ip_pool(self,request):
+        subnet=request.data['subnet']
+        iprange=request.data['iprange']
+        gateway=request.data['gateway']
+        aux_addresses=request.data['aux_addresses']
+        data={
+            "success":True,
+            "data":{
+                "subnet":subnet,
+                "iprange":iprange,
+                "gateway":gateway,
+                "aux_addresses":aux_addresses
+            }
+        }
+        if self.get_queryset().filter(subnet=subnet,iprange=iprange,gateway=gateway,aux_addresses=aux_addresses).count() == 0:
+            ser=self.get_serializer(data=data["data"])
+            print(data["data"])
+            if ser.is_valid():
+                ser.save()
+            return Response(data)
+        return Response({
+            "success":False,
+            "msg":"exist!"
+        })
+    @action(methods=['get'],detail=False)
+    def all_ip_pool(self,request):
+        return Response(self.get_queryset().all().values())
+
 class ImagedownloadView(APIView):
     def __init__(self):
         self.dclass=DockerView()
