@@ -5,43 +5,20 @@ import sys
 import json
 from io import BytesIO
 
-# root是指当前目录路径(文件夹的绝对路径)
-# dirs是指路径下所有的子目录(文件夹里的文件夹)
-# files是指路径下所有的文件(文件夹里所有的文件)
-def openFile(file_dir):
-    bayes_list=[]
-    svm_list=[]
-    xgboost_list=[]
-    for root,dirs,files in os.walk(file_dir):
-        for file in files:
-            if os.path.splitext(file)[0] == 'bayes':
-                bayes_list.append(os.path.join(root,file))
-                print((bayes_list))
-            elif os.path.splitext(file)[0] == 'svm':
-                svm_list.append(os.path.join(root,file))
-                print(svm_list)
-            elif os.path.splitext(file)[0] == 'xgboost':
-                xgboost_list.append(os.path.join(root,file))
-                print(xgboost_list)
-def file_name(file_dir):
-    for root, dirs, files in os.walk(file_dir):
-        print('root_dir:', root)  # 当前目录路径
-        print('sub_dirs:', dirs)  # 当前路径下所有子目录
-        print('files:', files)  # 当前路径下所有非目录子文件
-
 class DockerView():
     def __init__(self,*args,**kwargs):
         if "path" in kwargs and kwargs["path"]!="":
             self.path=kwargs["path"]
             try:
-                self.dockerm=docker.client(base_url=self.path)
+                self.dockerm=docker.client(base_url=self.path,timeout=100)
             except Exception as e:
                 self.dockerm=docker.from_env()
                 raise e
-                pass
         else:
             self.dockerm=docker.from_env()
-
+    """
+        About Image
+    """
     def pullImages(self,*args,**kwargs):
         imageName=kwargs["name"]
         tag=kwargs["tag"]
@@ -162,19 +139,11 @@ class DockerView():
                 "fail":str(e)
             }
 
-    def getAllContainers(self):
-        try:
-            conDict=self.dockerm.containers()
-            return conDict
-        except Exception as e:
-            return {}
 
-    def imageBuild(self,*args,**kwargs):
+    def imageBuild(self,path,tags):
         try:
-            path=kwargs["path"]
             f=open(path,"r")
             str=f.read()
-            tags=kwargs["tag"]
             print(str)
             f=BytesIO(str.encode('utf-8'))
             response=[line for line in self.dockerm.build(
@@ -182,8 +151,42 @@ class DockerView():
             )]
             f.close()
             print(response)
+            return {
+                "success":True,
+                "msg":"build image success"
+            }
         except Exception as e:
-            raise e
+            return {
+                "success":False,
+                "msg":e,
+                "response":response
+            }
+    def imageBuilds(self,*args,**kwargs):
+        try:
+            response = [line for line in self.dockerm.build(**kwargs)]
+            print(response)
+            return {
+                "success":True,
+                "msg":"build image success",
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e,
+                "response":response
+            }
+    def deleteCacheAfterBuild(self):
+        try:
+            dict=self.dockerm.prune_builds()
+            return {
+                "success":True,
+                "msg":dict
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
     def tagImage(self,image,repository,tag=None,force=False):
         try:
             bool=self.dockerm.tag(image,repository,tag=tag,force=force)
@@ -203,7 +206,9 @@ class DockerView():
                 "msg":str(e)
             }
 
-
+    """
+        About Network
+    """
     def creatEndpoint(self,aliases=None,links=None,ipv4_address=None,ipv6_address=None,link_local_ips=None,*args,**kwargs):
         try:
             end_config=self.dockerm.create_endpoint_config(aliases=aliases,links=links,ipv4_address=ipv4_address,ipv6_address=ipv6_address,\
@@ -310,6 +315,9 @@ class DockerView():
                 "success":False,
                 "msg":str(e)
             }
+    """
+        About Volumes
+    """
     def createVolumes(self,name=None,driver=None,driver_opts=None,labels=None):
         try:
             dic=self.dockerm.create_volume(name=name,driver=driver,driver_opts=driver_opts,labels=labels)
@@ -358,11 +366,139 @@ class DockerView():
                 "success":False,
                 "msg":str(e)
             }
-    
+    """
+        About exec
+    """
+    def execContainer(self,container,cmd,stdout=True,stderr=True,stdin=False,tty=False,privileged=False,user='',environment=None,workdir=None,detach_keys=None):
+        try:
+            cont=self.dockerm.exec_create(container=container,cmd=cmd,stdout=stdout,stderr=stderr,stdin=stdin,tty=tty,privileged=privileged,user=user,environment=environment,workdir=workdir,detach_keys=detach_keys)
+            return {
+                "success":True,
+                "msg":cont
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
+    def execDetail(self,exec_id):
+        try:
+            det=self.dockerm.exec_inspect(exec_id=exec_id)
+            return {
+                "success":True,
+                "msg":det
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
+    def execResize(self,exec_id,height=None,width=None):
+        try:
+            self.dockerm.exec_resize(exec_id=exec_id,height=height,width=width)
+            return {
+                "success":True,
+                "msg":"resize exec successful"
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
+    def execStart(self,exec_id,detach=False,tty=False,stream=False,socket=False,demux=False):
+        try:
+            ret=self.dockerm.exec_start(exec_id=exec_id,detach=detach,tty=tty,stream=stream,socket=socket,demux=demux)
+            return {
+                "success":True,
+                "msg":str(ret)
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
+    """
+        About Configs
+    """
+    def getAllConfigs(self,filters=None):
+        try:
+            dict=self.dockerm.configs(filters=filters)
+            return {
+                "success":True,
+                "msg":dict
+            }
+        except Exception as e:
+            return {
+                "success":True,
+                "msg":e
+            }
+    def createConfig(self,name,data,labels=None):
+        try:
+            dict=self.dockerm.create_config(name=name,data=data,labels=labels)
+            return {
+                "success":True,
+                "msg":dict
+            }
+        except Exception as e:
+            return {
+                "success":True,
+                "msg":e
+            }
+    def detailConfig(self,id):
+        try:
+            dict=self.dockerm.inspect_config(id=id)
+            return {
+                "success":True,
+                "msg":dict
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
+    def removeConfig(self,id):
+        try:
+            boole=self.dockerm.remove_config(id)
+            if boole==True:
+                return {
+                    "success":True,
+                    "msg":"delete Config successfully"
+                }
+            else:
+                return {
+                    "success":False,
+                    "msg":"delete config failed"
+                }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
+
+    """
+        About Container
+    """
+    def attachContainerBySocket(self,container,params=None,ws=False):
+        try:
+            socket=self.dockerm.attach_socket(container=container,params=params,ws=ws)
+            return socket
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":e
+            }
 
 
-a=DockerView()
-#a.pullImages(name="centos",tag="latest")
-#print(json.dumps(a.showNetwork(),indent=3))
-#a.showNetworkDetail(net_id="b0514c47f75cf59c9826b4adfc5d90240d185e03d989e557aa67cb9884e172ba")
-#print(a.removeImage("ubuntu"))
+    def getAllContainers(self):
+        try:
+            conDict=self.dockerm.containers()
+            return {
+                "success":True,
+                "msg":conDict
+            }
+        except Exception as e:
+            return {
+                "success":False,
+                "msg":False
+            }
+

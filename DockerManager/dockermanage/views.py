@@ -208,10 +208,9 @@ class NetworkViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,GenericView
         }
         if self.get_queryset().filter(subnet=subnet,iprange=iprange,gateway=gateway,aux_addresses=aux_addresses).count() == 0:
             ser=self.get_serializer(data=data["data"])
-            print(data["data"])
             if ser.is_valid():
                 ser.save()
-            return Response(data)
+                return Response(data)
         return Response({
             "success":False,
             "msg":"exist!"
