@@ -22,6 +22,7 @@ from .schema_view import DocParam
 from django.shortcuts import HttpResponse
 from rest_framework import permissions
 from rest_framework import generics
+import json
 # Create your views here.
 
 class ImageView(APIView):
@@ -218,6 +219,38 @@ class NetworkViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,GenericView
     @action(methods=['get'],detail=False)
     def all_ip_pool(self,request):
         return Response(self.get_queryset().all().values())
+class VolumesViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,GenericViewSet):
+    queryset = VolumesMode.objects.all()
+    serializer_class = VolumesSerializer
+    dk=DockerView()
+    @action(methods=['get'],detail=False)
+    def all(self,request):
+        dict=self.dk.listVolumes()
+        return Response(dict)
+    @action(methods=['post'],detail=False)
+    def create_volumes(self,request):
+        name=request.data["name"]
+        driver=request.data["driver"]
+        driver_opts=json.loads(request.data["driver_opts"])
+        labels=request.data["labels"]
+        data={
+            "name":name,
+            "driver":driver,
+            "driver_opts":driver_opts,
+            "labels":labels
+        }
+        if self.get_queryset().filter(name=name).count()==0:
+            dict=self.dk.createVolumes(name=name,driver=driver,driver_opts=driver_opts,labels=labels)
+            ser=self.get_serializer(data=data)
+            if ser.is_valid():
+                ser.save
+                return Response(dict)
+        else:
+            return {
+                "success":False,
+                "msg":"this value is exist!"
+            }
+
 
 class ImagedownloadView(APIView):
     def __init__(self):

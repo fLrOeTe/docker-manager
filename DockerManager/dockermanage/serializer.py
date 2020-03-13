@@ -23,3 +23,7 @@ class IpamPoolSerializer(serializers.ModelSerializer):
         fields=('subnet','iprange','gateway','aux_addresses')
 
 
+class VolumesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=VolumesMode
+        fields=('name','driver','driver_opts','labels')

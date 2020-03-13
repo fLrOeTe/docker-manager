@@ -40,3 +40,13 @@ class IpamPoolModel(models.Model):
     class Meta:
         verbose_name='IpamPool'
         verbose_name_plural=verbose_name
+
+class VolumesMode(models.Model):
+    name=models.CharField(max_length=100,primary_key=True)
+    driver=models.CharField(max_length=100)
+    driver_opts=models.CharField(max_length=200)
+    labels=models.CharField(max_length=150)
+
+    class Meta:
+        verbose_name="Volumes"
+        verbose_name_plural=verbose_name
