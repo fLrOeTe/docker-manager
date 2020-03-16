@@ -95,9 +95,6 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
     @action(methods=['post'],detail=False)
     def search(self,request):
         self.refrush()
-        coreapi_fields=(
-            DocParam(name='name',location='query',description='image name')
-        )
         name=request.data["name"]
         ret=self.get_queryset().filter(name=name)
         image=self.dk.inspectImage(request.data["name"])
@@ -148,10 +145,14 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
             if ret!={}:
                 name=ret["name"]+":"+ret["tag"]
                 dic=self.dk.inspectImage(image=name)
-                return Response(dic)
+                return Response({
+                    "success":True,
+                    "msg":dic
+                })
             else:
                 return Response({
-                    "success":False
+                    "success":False,
+                    "msg":"No"
                 })
         elif name!="":
             dic={}
@@ -160,10 +161,14 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
                 dic=self.dk.inspectImage(image=name)
             else:
                 dic=self.dk.inspectImage(image=name)
-            return Response(dic)
+            return Response({
+                "success":True,
+                "msg":"No"
+            })
         else:
             return Response({
-                "success":False
+                "success":False,
+                "msg":"No"
             })
     @action(methods=['post'],detail=False)
     def find(self,request):
