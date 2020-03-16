@@ -103,7 +103,7 @@
         },
         created(){
             var that=this;
-            axios("/api/image/download")
+            axios("/image/all/")
             .then(function(response){
                 console.log(response.data);
                 that.tableData=response.data;

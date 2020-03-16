@@ -21,9 +21,8 @@ class DockerView():
     """
     def pullImages(self,*args,**kwargs):
         imageName=kwargs["name"]
-        tag=kwargs["tag"]
         try:
-            res=self.dockerm.pull(imageName,tag=tag)
+            res=self.dockerm.pull(imageName)
             print(res)
         except Exception as e:
             print(e)

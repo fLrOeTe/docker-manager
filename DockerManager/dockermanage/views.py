@@ -102,6 +102,7 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
     @action(methods=['post'],detail=False)
     def delete(self,request):
         self.refrush()
+        print(request.data)
         name=request.data["name"]
         tag=request.data["tag"]
         id=request.data["id"]
@@ -178,9 +179,8 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
     @action(methods=['post'],detail=False)
     def pull(self,request):
         name=request.data['name']
-        tag=request.data['tag']
         try:
-            self.dk.pullImages(name=name,tag=tag)
+            self.dk.pullImages(name=name)
             ret={
                 "success":True,
                 "msg":"pull image success!"

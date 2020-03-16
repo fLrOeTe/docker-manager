@@ -41,12 +41,12 @@
                     {
                         icon: 'el-icon-lx-home',
                         index: 'dashboard',
-                        title: '系统首页'
+                        title: 'All images'
                     },
                     {
                         icon: 'el-icon-search',
                         index: 'search',
-                        title: '查询修改'
+                        title: 'Search & Pull'
                     }
                 ]
             }

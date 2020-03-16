@@ -6,10 +6,10 @@ module.exports = {
             warnings: false,
             errors: false
         },
-        port: 8080,
+        port: 8000,
         proxy: {
             '':{
-                target:'http://192.168.0.102:8000',
+                target:'http://192.168.0.106:8000',
                 changeOrigin:true,
                 ws:false,
             },        

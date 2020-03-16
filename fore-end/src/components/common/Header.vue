@@ -4,7 +4,7 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo">Docker 调度</div>
+        <div class="logo">Docker Manager</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
@@ -13,6 +13,23 @@
                         <i class="el-icon-rank"></i>
                     </el-tooltip>
                 </div>
+                <!-- 用户头像 -->
+                <div class="user-avator"><img src="../../assets/img/img.jpg"></div>
+                <!-- 用户名下拉菜单 -->
+                <el-dropdown class="user-name" trigger="click" @command="handleCommand">
+                    <span class="el-dropdown-link">
+                        {{username}} <i class="el-icon-caret-bottom"></i>
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                        <a href="http://blog.gdfengshuo.com/about/" target="_blank">
+                            <el-dropdown-item>关于作者</el-dropdown-item>
+                        </a>
+                        <a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
+                            <el-dropdown-item>项目仓库</el-dropdown-item>
+                        </a>
+                        <el-dropdown-item divided  command="loginout">退出登录</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
             </div>
         </div>
     </div>

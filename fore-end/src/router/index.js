@@ -7,7 +7,7 @@ export default new Router({
     routes: [
         {
             path: '/',
-            redirect: '/image'
+            redirect: '/dashboard'
         },
         {
             path: '/',
@@ -20,9 +20,14 @@ export default new Router({
                     meta: { title: '系统首页' }
                 },
                 {
+                    path: '/dashboard',
+                    component: resolve => require(['../components/page/Dashboard.vue'], resolve),
+                    meta: { title: 'All images' }
+                },
+                {
                     path: '/search',
-                    component: resolve => require(['../components/page/DownloadImage.vue'], resolve),
-                    meta: { title: '查询修改' }
+                    component: resolve => require(['../components/page/Search.vue'], resolve),
+                    meta: { title: 'Search & Pull' }
                 }
             ]
         },
