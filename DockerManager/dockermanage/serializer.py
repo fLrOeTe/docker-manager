@@ -27,3 +27,8 @@ class VolumesSerializer(serializers.ModelSerializer):
     class Meta:
         model=VolumesMode
         fields=('name','driver','driver_opts','labels')
+
+class ConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=ConfigModel
+        fields=('id','name','data')

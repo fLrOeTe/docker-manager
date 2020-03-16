@@ -27,6 +27,7 @@ router=routers.SimpleRouter()
 router.register(r'images',ImageConfigViewSet,basename="image-detail")
 router.register(r'network',NetworkViewSet,basename="network_detail")
 router.register(r'volumes',VolumesViewSet,basename="volumes_detail")
+router.register(r'config',ConfigViewSet,basename='config-detail')
 #schema_view=get_swagger_view(title='api doc')
 #schema_view = get_schema_view(title='API',renderer_classes=[SwaggerUIRenderer,OpenAPIRenderer])
 urlpatterns = [

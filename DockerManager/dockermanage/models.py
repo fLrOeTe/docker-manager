@@ -50,3 +50,12 @@ class VolumesMode(models.Model):
     class Meta:
         verbose_name="Volumes"
         verbose_name_plural=verbose_name
+
+class ConfigModel(models.Model):
+    id=models.CharField(max_length=120,primary_key=True)
+    name=models.CharField(max_length=100)
+    data=models.CharField(max_length=15000)
+
+    class Meta:
+        verbose_name="Config"
+        verbose_name_plural=verbose_name

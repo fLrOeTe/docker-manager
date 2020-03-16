@@ -172,6 +172,9 @@ class ImageConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,Generic
                 "msg":"No"
             })
     @action(methods=['post'],detail=False)
+    def download(self,request):
+        image=request.data["name"]
+    @action(methods=['post'],detail=False)
     def find(self,request):
         name=request.data['name']
         dic=self.dk.searchImage(tern=name)
@@ -255,7 +258,25 @@ class VolumesViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,GenericView
                 "success":False,
                 "msg":"this value is exist!"
             }
-
+class ConfigViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,GenericViewSet):
+    queryset = ConfigModel.objects.all()
+    serializer_class = ConfigSerializer
+    dk=DockerView()
+    @action(methods=['get'],detail=False)
+    def all(self,request):
+        dic=self.dk.getAllConfigs()
+        print(dic)
+        if type(dic["msg"])=="dict":
+            return Response(dic)
+        else:
+            return Response({})
+    @action(methods=['post'],detail=False)
+    def create_config(self,request):
+        name=request.data["name"]
+        data=request.data["data"].encode('utf-8')
+        dic=self.dk.createConfig(name=name,data=data)
+        print(dic)
+        return Response({})
 
 class ImagedownloadView(APIView):
     def __init__(self):
